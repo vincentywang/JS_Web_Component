@@ -1,4 +1,5 @@
 var widget = (function(jsonData){
+
 	var qualityTab,
 			pageLink,
 			priceList,
@@ -101,7 +102,36 @@ var widget = (function(jsonData){
 		.appendTo("#purchaseWidget");
 	}
 
+	function buildPriceList (oPriceList) {
 
+		var priceList = $('<div/>', {
+			id : "purchaseWidgetLeft",
+			"class" : "purchase-widget-top"
+		}).appendTo('#purchaseWidget');
+		var $ul = $('<ul/>');
+		$ul.appendTo(priceList);
+
+		for (var index in oPriceList) {
+			if (oPriceList.hasOwnProperty(index)) {
+				$('<li/>', {
+					html : "<div><div class=\"pricebox\"><div class=\"price_item\"><div class=\"clearboth\"></div></div></div></div>"
+				}).appendTo($ul);
+			}
+		}
+	}
+
+	// leason event about user click, update number according to the index
+	function buildTicketCounter () {
+		var labelText = "Number of tickets";
+		var upperarrow = $("div", {
+			id : "up_arrow",
+			html : "<span class=\"mk-moon-arrow-up\"></span>"
+		});
+		var downarrow = $("div", {
+			id : "down_arrow",
+			html : "<span class=\"\"></span>"
+		})
+	}
 
 	return {
 		render : render,
