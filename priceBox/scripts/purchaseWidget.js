@@ -1,12 +1,67 @@
 var widget = (function(jsonData){
 
-	var qualityTab,
-			pageLink,
-			priceList,
-			ticketCounter,
-			priceLabel,
-			purchaseButton,
-			quality = [];
+	var $purchaseWidget,  
+		$qualityTab,      
+		$textLink,        
+		$priceList,       
+		$ticketCounter,   
+		$priceLabel,      
+		$payButton,
+		quality = [];
+
+	var	dataSource = {
+		originData : null,
+		quality : [],
+		getQualityType : function() {
+			for (var index in this.originData) {
+				if (this.originData.hasOwnProperty(index)) {
+					quality.push(index);
+				}
+			}
+		}
+	}
+
+	function init (argument) {
+		initBasicHtml();
+		render();
+		testFun();
+	}
+
+	function testFun () {
+		console.trace(dataSource.quality);
+	}
+
+	// init html wrapper to set up variables
+	function initBasicHtml (argument) {
+		// #purchaseWidget
+		// #qualityTab
+		// #textLink
+		// #priceList
+		// #ticketsCounter
+		// #priceLabel
+		// #payButton
+		
+		$purchaseWidget =  $("<div></div>", {"id" : "purchaseWidget"}),
+		$qualityTab =      $("<div></div>", {"id" : "qualityTab"}),
+		$textLink =        $('<div></div>', {"id" : "textLink"}),
+		$priceList =       $('<div></div>', {"id" : "priceList"}),
+		$ticketCounter =   $('<div></div>', {"id" : "ticketCounter"}),
+		$priceLabel =      $('<div></div>', {"id" : "priceLabel"}),
+		$payButton =       $('<div></div>', {"id" : "payButton"});
+
+		$purchaseWidget
+			.append($qualityTab)
+			.append($textLink)
+			.append($priceList)
+			.append($ticketCounter)
+			.append($priceLabel)
+			.append($payButton);
+
+		// $purchaseWidget.appendTo($('div#myApp'));
+		$('div#myApp').append($purchaseWidget);
+
+	}
+	
 
 	function render () {
 		loadData();
@@ -20,41 +75,36 @@ var widget = (function(jsonData){
 			dataType : 'json',
 			success : function(data) {
 				console.log(data)
-				getQualityType(data);
-				console.log(quality);
+				dataSource.originData = data;
+				// dataSource.getQualityType();
+				// console.log(quality);
 				buildQualityTab(quality);
-				buildPageLink();
+				buildTextLink();
 			}
 		})
 	}
 	
-	function getQualityType (jsonData) {
-		for (var index in jsonData) {
-			if (jsonData.hasOwnProperty(index)) {
-				quality.push(index);
-			}
-		}
-	}
+	
 
 	/**
 	 * passing in array ['SD', 'HD', '3D', '4K']
 	 */
 	function buildQualityTab (q) {
 		var imgSrc = '',
-				sdSrc = '/assets/img/sd.png',
-				hdSrc = '/assets/img/hd.png',
-				threeDSrc = '/assets/img/3d.png',
-				fourKSrc = '/assets/img/4k.png',
-				sdFocSrc = '/assets/img/sd_focus.png',
-				hdFocSrc ='/assets/img/hd_focus.png',
-				threeDFocSrc = '/assets/img/3d_focus.png',
-				fourKFocSrc = '/assets/img/4k_focus.png';
+			sdSrc = '/assets/img/sd.png',
+			hdSrc = '/assets/img/hd.png',
+			threeDSrc = '/assets/img/3d.png',
+			fourKSrc = '/assets/img/4k.png',
+			sdFocSrc = '/assets/img/sd_focus.png',
+			hdFocSrc ='/assets/img/hd_focus.png',
+			threeDFocSrc = '/assets/img/3d_focus.png',
+			fourKFocSrc = '/assets/img/4k_focus.png';
 
-		qualityTab = $("<div>", {
+		tab = $("<div>", {
 			id: 'qualityTab',
 			"class": 'purchaseWidgetSpecial',
 			text: 'this quality tab'
-		}).appendTo('#purchaseWidget');
+		}).appendTo($qualityTab);
 
 		for (var index in q) {
 			if (q.hasOwnProperty(index)) {
@@ -82,12 +132,12 @@ var widget = (function(jsonData){
 				"class" : 'movieQualityIcon movieQualityIcon_click'
 			}).append(imgEle);
 
-			tabEle.appendTo(qualityTab);
+			tabEle.appendTo($qualityTab);
 		}
 
 	}
 
-	function buildPageLink () {
+	function buildTextLink () {
 		var link = $("<a>", {
 			href : 'http://www.synaptop.com/how-to-watch-movies-with-friends/',
 			html : '<span>Watch with friends in sync</span>'
@@ -99,7 +149,7 @@ var widget = (function(jsonData){
 		var pageLink = $("<div/>", {
 			"class" : "wild_screen"
 		}).append(linkWrapper)
-		.appendTo("#purchaseWidget");
+		.appendTo($textLink);
 	}
 
 	function buildPriceList (oPriceList) {
@@ -119,6 +169,9 @@ var widget = (function(jsonData){
 			}
 		}
 	}
+	function buildPriceLabel (price, priceHolder) {
+		
+	}
 
 	// leason event about user click, update number according to the index
 	function buildTicketCounter () {
@@ -135,7 +188,8 @@ var widget = (function(jsonData){
 
 	return {
 		render : render,
-		test : getQualityType
+		test : testFun,
+		init : init
 	}
 
 })();

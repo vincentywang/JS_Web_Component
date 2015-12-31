@@ -1,0 +1,18 @@
+body {
+	background-color: gray;
+	width: 600px;
+	margin: 0 auto;
+}
+#myApp {
+	width: 500px;
+	height: 85%;
+	background-color: wheat;
+	margin: 0 auto;
+}
+#purchaseWidget {
+	width: 65%;
+	height: 600px;
+	border-radius: 2px;
+	border: solid red 1px;
+	margin: 0 auto;
+}
