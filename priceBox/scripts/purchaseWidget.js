@@ -6,20 +6,33 @@ var widget = (function(jsonData){
 		$priceList,       
 		$ticketCounter,   
 		$priceLabel,      
-		$payButton,
-		quality = [];
+		$payButton;
 
 	var	dataSource = {
 		originData : null,
 		quality : [],
+		linkMsg : 'https://www.github.com',
 		getQualityType : function() {
 			for (var index in this.originData) {
 				if (this.originData.hasOwnProperty(index)) {
-					quality.push(index);
+					this.quality.push(index);
+				}
+			}
+			return this.quality;
+		},
+		getTextLinkMsg : function() {
+			return this.linkMsg;
+		},
+		getQualityPrice : function(qualityTag) { // SD, HD
+			for (var index in this.originData) {
+				if (this.originData.hasOwnProperty(index)) {
+					if (index === qualityTag) {
+						return this.originData[index];
+					}
 				}
 			}
 		}
-	}
+	};
 
 	function init (argument) {
 		initBasicHtml();
@@ -33,20 +46,13 @@ var widget = (function(jsonData){
 
 	// init html wrapper to set up variables
 	function initBasicHtml (argument) {
-		// #purchaseWidget
-		// #qualityTab
-		// #textLink
-		// #priceList
-		// #ticketsCounter
-		// #priceLabel
-		// #payButton
 		
-		$purchaseWidget =  $("<div></div>", {"id" : "purchaseWidget"}),
-		$qualityTab =      $("<div></div>", {"id" : "qualityTab"}),
-		$textLink =        $('<div></div>', {"id" : "textLink"}),
-		$priceList =       $('<div></div>', {"id" : "priceList"}),
-		$ticketCounter =   $('<div></div>', {"id" : "ticketCounter"}),
-		$priceLabel =      $('<div></div>', {"id" : "priceLabel"}),
+		$purchaseWidget =  $("<div></div>", {"id" : "purchaseWidget"});
+		$qualityTab =      $("<div></div>", {"id" : "qualityTab"});
+		$textLink =        $('<div></div>', {"id" : "textLink"});
+		$priceList =       $('<div></div>', {"id" : "priceList"});
+		$ticketCounter =   $('<div></div>', {"id" : "ticketCounter"});
+		$priceLabel =      $('<div></div>', {"id" : "priceLabel"});
 		$payButton =       $('<div></div>', {"id" : "payButton"});
 
 		$purchaseWidget
@@ -74,14 +80,14 @@ var widget = (function(jsonData){
 			url : 'data.json',
 			dataType : 'json',
 			success : function(data) {
-				console.log(data)
+				console.log(data);
 				dataSource.originData = data;
 				// dataSource.getQualityType();
-				// console.log(quality);
-				buildQualityTab(quality);
+				buildPriceList('SD');
+				buildQualityTab();
 				buildTextLink();
 			}
-		})
+		});
 	}
 	
 	
@@ -89,7 +95,8 @@ var widget = (function(jsonData){
 	/**
 	 * passing in array ['SD', 'HD', '3D', '4K']
 	 */
-	function buildQualityTab (q) {
+	function buildQualityTab () {
+		// console.log('buildQualityTab.call');
 		var imgSrc = '',
 			sdSrc = '/assets/img/sd.png',
 			hdSrc = '/assets/img/hd.png',
@@ -100,15 +107,21 @@ var widget = (function(jsonData){
 			threeDFocSrc = '/assets/img/3d_focus.png',
 			fourKFocSrc = '/assets/img/4k_focus.png';
 
-		tab = $("<div>", {
-			id: 'qualityTab',
-			"class": 'purchaseWidgetSpecial',
-			text: 'this quality tab'
-		}).appendTo($qualityTab);
+		var quality = dataSource.getQualityType();
+		// console.log(quality);
 
-		for (var index in q) {
-			if (q.hasOwnProperty(index)) {
-				switch(q[index]) {
+		var qualityTabEle = function(src) {
+			var tab = $("<div>", {
+				"class" : 'single-quality-tab',
+				"html" : '<div class="tab-wrapper"><div class="tab"><img src="' + src + '"></div></div>'
+			});
+			return tab;
+		};
+
+		for (var index in quality) {
+			// console.log('if i am in the for loop')
+			if (quality.hasOwnProperty(index)) {
+				switch(quality[index]) {
 					case 'SD':
 						imgSrc = sdFocSrc;
 						break;
@@ -126,22 +139,20 @@ var widget = (function(jsonData){
 				}
 			}
 
-			var imgEle = $("<img>", {src : imgSrc}),
-					tabEle = $("<div/>", {
-				id : q[index],
-				"class" : 'movieQualityIcon movieQualityIcon_click'
-			}).append(imgEle);
+			qualityTabEle(imgSrc).appendTo($qualityTab);
 
-			tabEle.appendTo($qualityTab);
 		}
 
 	}
 
 	function buildTextLink () {
+
+		var href = dataSource.getTextLinkMsg();
 		var link = $("<a>", {
-			href : 'http://www.synaptop.com/how-to-watch-movies-with-friends/',
+			href : href,
 			html : '<span>Watch with friends in sync</span>'
 		});
+
 		var linkWrapper = $("<div/>",{
 			"class" : 'external_link'
 		}).append(link);
@@ -152,22 +163,50 @@ var widget = (function(jsonData){
 		.appendTo($textLink);
 	}
 
-	function buildPriceList (oPriceList) {
 
-		var priceList = $('<div/>', {
-			id : "purchaseWidgetLeft",
-			"class" : "purchase-widget-top"
-		}).appendTo('#purchaseWidget');
+	/**
+	 *  
+	 *
+	 */
+	function buildPriceList (qualityTag) {
+
+	var oPriceList = dataSource.getQualityPrice(qualityTag);
+
+		// var priceList = $('<div/>', {
+		// 	id : "purchaseWidgetLeft",
+		// 	"class" : "purchase-widget-top"
+		// }).appendTo('#purchaseWidget');
+		var priceElement = function(num, price) {
+			var ticketNum = num,
+				singlePrice = price,
+				ticketText;
+
+			if (ticketNum > 1) {
+				ticketText = "tickets";
+			} else {
+				ticketText = "ticket";
+			}
+
+			var ele = $("<div></div>", {
+				'class' : 'single-price-ele-wrapper',
+				'html' : '<li><div class="single-price-box"><div></div></div><div class="single-price-ele">' + num + ticketText + price + '/user' +'</div></li>'
+			});
+
+			return ele;
+		};
+
 		var $ul = $('<ul/>');
-		$ul.appendTo(priceList);
+		// $ul.appendTo(priceList);
+		console.log(oPriceList);
 
 		for (var index in oPriceList) {
+			console.log('do i run this function');
 			if (oPriceList.hasOwnProperty(index)) {
-				$('<li/>', {
-					html : "<div><div class=\"pricebox\"><div class=\"price_item\"><div class=\"clearboth\"></div></div></div></div>"
-				}).appendTo($ul);
+				priceElement(index, oPriceList[index]).appendTo($ul);
 			}
 		}
+
+		$ul.appendTo($priceList);
 	}
 	function buildPriceLabel (price, priceHolder) {
 		
@@ -183,7 +222,7 @@ var widget = (function(jsonData){
 		var downarrow = $("div", {
 			id : "down_arrow",
 			html : "<span class=\"\"></span>"
-		})
+		});
 	}
 
 	function registerTicketArrows () {
@@ -222,7 +261,7 @@ var widget = (function(jsonData){
 		render : render,
 		test : testFun,
 		init : init
-	}
+	};
 
 })();
 
