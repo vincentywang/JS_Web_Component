@@ -186,6 +186,38 @@ var widget = (function(jsonData){
 		})
 	}
 
+	function registerTicketArrows () {
+		$('div#upperarrow').on('click', function(){
+			addOneTicket();
+		});
+		$('div#downarrow').on('click', function(){
+			subOneTicket();
+		});
+	}
+
+	function registerQualityChange () {
+		var qualityTab = $('quality');
+		qualityTab.on('click', function() {
+			var quality = $(this).data('tag');
+			var oPricet = getPrice(quality);
+			buildPriceList(oPricet); // render update page, 
+		});
+	}
+
+	function addOneTicket () {
+		numTicket ++ ;
+		updateTicketNum(numTicket);
+	}
+
+	function subOneTicket () {
+		numTicket --;
+		updateTicketNum(numTicket);
+	}
+
+	function updateTicketNum (numTicket) {
+		$('div.ticketholder').html(parseInt(numTicket));
+	}
+
 	return {
 		render : render,
 		test : testFun,
