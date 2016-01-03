@@ -16,3 +16,41 @@ body {
 	border: solid red 1px;
 	margin: 0 auto;
 }
+.single-quality-tab {
+	display: block;
+	width: 25%;
+	float: left;
+}
+.single-quality-tab img {
+	width: 100px;
+	height: 65px;
+}
+.clear-both {
+	clear: both;
+}
+#ticketCounter * {
+	border: solid red 1px;
+	margin: 0 auto;
+}
+.ticket-counter {
+	height: 60px;
+    width: 70%;
+}
+.ticket-num {
+	height: 100%;
+	width: 65%;
+	float: left;
+}
+.control-pan {
+	height: 100%;
+	width:30%;
+	float: left;
+}
+#up_arrow {
+	height: 50%;
+	background-color: green;
+}
+#down_arrow {
+	height: 50%;
+	background-color: red;
+}

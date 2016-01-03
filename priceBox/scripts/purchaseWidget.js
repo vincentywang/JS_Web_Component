@@ -83,9 +83,10 @@ var widget = (function(jsonData){
 				console.log(data);
 				dataSource.originData = data;
 				// dataSource.getQualityType();
-				buildPriceList('SD');
 				buildQualityTab();
 				buildTextLink();
+				buildPriceList('SD');
+				buildTicketCounter();
 			}
 		});
 	}
@@ -123,7 +124,7 @@ var widget = (function(jsonData){
 			if (quality.hasOwnProperty(index)) {
 				switch(quality[index]) {
 					case 'SD':
-						imgSrc = sdFocSrc;
+						imgSrc = sdSrc;
 						break;
 					case 'HD':
 						imgSrc = hdSrc;
@@ -142,6 +143,10 @@ var widget = (function(jsonData){
 			qualityTabEle(imgSrc).appendTo($qualityTab);
 
 		}
+		var clearEle = $("<div>", {
+			"class" : "clear-both"
+		});
+		$qualityTab.append(clearEle);
 
 	}
 
@@ -215,14 +220,33 @@ var widget = (function(jsonData){
 	// leason event about user click, update number according to the index
 	function buildTicketCounter () {
 		var labelText = "Number of tickets";
-		var upperarrow = $("div", {
+		var labelTextEle = $("<div>", {
+			"class" : "ticket-label-text",
+			"text" : labelText
+		});
+		var upperarrow = $("<div>", {
 			id : "up_arrow",
 			html : "<span class=\"mk-moon-arrow-up\"></span>"
 		});
-		var downarrow = $("div", {
+		var downarrow = $("<div>", {
 			id : "down_arrow",
 			html : "<span class=\"\"></span>"
 		});
+		var labelTicketNum = $("<div>", {
+			"class" : "ticket-num"
+		});
+		var controlPan = $("<div>", {
+			"class" : "control-pan"
+		});
+		controlPan.append(upperarrow).append(downarrow);
+		var counter = $("<div>", {
+			"class" : "ticket-counter"
+		});
+	
+		counter.append(labelTicketNum).append(controlPan);
+
+		labelTextEle.appendTo($ticketCounter);
+		counter.appendTo($ticketCounter);
 	}
 
 	function registerTicketArrows () {
