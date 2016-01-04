@@ -6,7 +6,8 @@ var widget = (function(jsonData){
 		$priceList,       
 		$ticketCounter,   
 		$priceLabel,      
-		$payButton;
+		$payButton,
+		$numTicket;
 
 	var	dataSource = {
 		originData : null,
@@ -175,7 +176,7 @@ var widget = (function(jsonData){
 	 */
 	function buildPriceList (qualityTag) {
 
-	var oPriceList = dataSource.getQualityPrice(qualityTag);
+		var oPriceList = dataSource.getQualityPrice(qualityTag);
 
 		// var priceList = $('<div/>', {
 		// 	id : "purchaseWidgetLeft",
@@ -212,7 +213,23 @@ var widget = (function(jsonData){
 		}
 
 		$ul.appendTo($priceList);
+		
 	}
+
+	/**
+	 * This function should work for all quality types
+	 * @return {[type]}
+	 */
+	function initPriceList () {	
+		console.log("initPriceList.call");
+		// init price list select the first one
+		$("div.single-price-box").eq(0).addClass('select');
+		// init ticket counter set the number 1
+		numTicket = 1;
+		$("div.ticket-num").html(numTicket);
+
+	}
+
 	function buildPriceLabel (price, priceHolder) {
 		
 	}
@@ -247,13 +264,17 @@ var widget = (function(jsonData){
 
 		labelTextEle.appendTo($ticketCounter);
 		counter.appendTo($ticketCounter);
+		initPriceList();
+		registerTicketArrows();
 	}
 
 	function registerTicketArrows () {
-		$('div#upperarrow').on('click', function(){
+		$('div#up_arrow').on('click', function(){
+			console.log("click up arrow");
 			addOneTicket();
 		});
-		$('div#downarrow').on('click', function(){
+		$('div#down_arrow').on('click', function(){
+			console.log("click down arrow");
 			subOneTicket();
 		});
 	}
@@ -278,7 +299,7 @@ var widget = (function(jsonData){
 	}
 
 	function updateTicketNum (numTicket) {
-		$('div.ticketholder').html(parseInt(numTicket));
+		$('div.ticket-num').html(parseInt(numTicket));
 	}
 
 	return {
