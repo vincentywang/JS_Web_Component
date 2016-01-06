@@ -112,7 +112,7 @@ var widget = (function(jsonData){
 		var quality = dataSource.getQualityType();
 		// console.log(quality);
 
-		var qualityTabEle = function(src) {
+		var qualityTabEle = function(src, tag) {
 			var tab = $("<div>", {
 				"class" : 'single-quality-tab',
 				"html" : '<div class="tab-wrapper"><div class="tab"><img src="' + src + '"></div></div>'
@@ -140,14 +140,17 @@ var widget = (function(jsonData){
 						imgSrc = sdFocSrc;	
 				}
 			}
-
-			qualityTabEle(imgSrc).appendTo($qualityTab);
+			qualityTag = quality[index];
+			qualityTabEle(imgSrc, qualityTag).attr({
+				"data-tag" : qualityTag
+			}).appendTo($qualityTab);
 
 		}
 		var clearEle = $("<div>", {
 			"class" : "clear-both"
 		});
 		$qualityTab.append(clearEle);
+		registerQualityChange();
 
 	}
 
@@ -212,7 +215,8 @@ var widget = (function(jsonData){
 			}
 		}
 
-		$ul.appendTo($priceList);
+		// $ul.appendTo($priceList);
+		$priceList.html($ul);
 		
 	}
 
@@ -280,11 +284,13 @@ var widget = (function(jsonData){
 	}
 
 	function registerQualityChange () {
-		var qualityTab = $('quality');
+		console.log("do i run registerQualityChange function");
+		var qualityTab = $('.single-quality-tab');
 		qualityTab.on('click', function() {
+			console.log("you clicked this tab");
 			var quality = $(this).data('tag');
-			var oPricet = getPrice(quality);
-			buildPriceList(oPricet); // render update page, 
+			// var oPricet = getPrice(quality);
+			buildPriceList(quality); // render update page, 
 		});
 	}
 
