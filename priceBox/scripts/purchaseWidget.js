@@ -190,15 +190,11 @@ var widget = (function(jsonData){
 				singlePrice = price,
 				ticketText;
 
-			if (ticketNum > 1) {
-				ticketText = "tickets";
-			} else {
-				ticketText = "ticket";
-			}
+			ticketText = (ticketNum > 1) ? 'tickets' : 'ticket';
 
 			var ele = $("<div></div>", {
 				'class' : 'single-price-ele-wrapper',
-				'html' : '<li><div class="single-price-box"><div></div></div><div class="single-price-ele">' + num + ticketText + price + '/user' +'</div></li>'
+				'html' : '<li><div class="single-price-box"><div></div></div><div class="single-price-ele">' + num + ' ' + ticketText + ' ' + price + '/user' +'</div></li>'
 			});
 
 			return ele;
@@ -209,13 +205,11 @@ var widget = (function(jsonData){
 		console.log(oPriceList);
 
 		for (var index in oPriceList) {
-			console.log('do i run this function');
 			if (oPriceList.hasOwnProperty(index)) {
 				priceElement(index, oPriceList[index]).appendTo($ul);
 			}
 		}
 
-		// $ul.appendTo($priceList);
 		$priceList.html($ul);
 		
 	}
@@ -234,10 +228,6 @@ var widget = (function(jsonData){
 
 	}
 
-	function buildPriceLabel (price, priceHolder) {
-		
-	}
-
 	// leason event about user click, update number according to the index
 	function buildTicketCounter () {
 		var labelText = "Number of tickets";
@@ -246,11 +236,11 @@ var widget = (function(jsonData){
 			"text" : labelText
 		});
 		var upperarrow = $("<div>", {
-			id : "up_arrow",
+			class : "up_arrow",
 			html : "<span class=\"mk-moon-arrow-up\"></span>"
 		});
 		var downarrow = $("<div>", {
-			id : "down_arrow",
+			class : "down_arrow",
 			html : "<span class=\"\"></span>"
 		});
 		var labelTicketNum = $("<div>", {
@@ -272,25 +262,49 @@ var widget = (function(jsonData){
 		registerTicketArrows();
 	}
 
+	
+	function buildPriceLabel (price) {
+		
+		var priceLabel = $("<div>", {
+			class : "price-label",
+			html : '<div class="price-label-text"></div><div class="price-wrapper"><div class="price">' + price +'</div></div>'
+		});
+		$priceLabel.html(priceLabel);
+
+	}
+
 	function registerTicketArrows () {
-		$('div#up_arrow').on('click', function(){
-			console.log("click up arrow");
-			addOneTicket();
+
+		$('div.control-pan').on('click', 'div', function(){
+			var $this = $(this);
+			if ($this.hasClass('up_arrow')) {
+				console.log("click up arrow");
+				addOneTicket();
+			} else if ($this.hasClass('down_arrow')) {
+				console.log("click down arrow");
+				subOneTicket();
+			}
 		});
-		$('div#down_arrow').on('click', function(){
-			console.log("click down arrow");
-			subOneTicket();
-		});
+
+
+		// $('div#up_arrow').on('click', function(){
+		// 	console.log("click up arrow");
+		// 	addOneTicket();
+		// });
+		// $('div#down_arrow').on('click', function(){
+		// 	console.log("click down arrow");
+		// 	subOneTicket();
+		// });
 	}
 
 	function registerQualityChange () {
-		console.log("do i run registerQualityChange function");
+		console.log("registerQualityChange.call");
 		var qualityTab = $('.single-quality-tab');
 		qualityTab.on('click', function() {
-			console.log("you clicked this tab");
 			var quality = $(this).data('tag');
-			// var oPricet = getPrice(quality);
-			buildPriceList(quality); // render update page, 
+			console.log("clicked " + quality + " tab");
+			buildPriceList(quality);
+			buildPriceLabel('20');
 		});
 	}
 
