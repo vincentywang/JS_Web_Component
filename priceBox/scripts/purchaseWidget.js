@@ -132,6 +132,7 @@ var widget = (function(jsonData){
 			dataSource.setQualityPrice(qualityTag);
 			var price = dataSource.getTicketPrice(num);
 			buildPriceList(qualityTag);
+			updateTicketNum(num);
 			buildPriceLabel(price);
 		}
 	
@@ -276,10 +277,10 @@ var widget = (function(jsonData){
 
 			ticketText = (ticketNum > 1) ? 'tickets' : 'ticket';
 
-			var ele = $("<div></div>", {
+			var ele = $("<li></li>", {
 				'class' : 'single-price-ele-wrapper',
-				'html' : '<li><div class="single-price-box"><div></div></div><div class="single-price-ele">' + num + ' ' + ticketText + ' ' + price + '/user' +'</div></li>'
-			});
+				'html' : '<div class="single-price-box"><div></div></div><div class="single-price-ele">' + num + ' ' + ticketText + ' $' + price + '/user' +'</div>'
+			}).attr('data-num', num).attr('data-price', price);
 
 			return ele;
 		};
@@ -295,7 +296,26 @@ var widget = (function(jsonData){
 		}
 
 		$priceList.html($ul);
+		registerPriceListSelect($ul);
 		
+	}
+
+	function registerPriceListSelect (ul) {
+		ul.on('click', 'li.single-price-ele-wrapper', function() {
+			console.log(this);
+			console.log($(this).data('num'));
+			console.log($(this).data('price'));
+			// need get prices
+			// need get ticket numbers
+			var iNum = $(this).data('num'),
+				iPrice = $(this).data('price'),
+				totPrice = iNum * iPrice;
+
+			numTicket = iNum;
+			updateTicketNum(numTicket);
+			buildPriceLabel(totPrice);
+			
+		});
 	}
 
 	/**
@@ -354,7 +374,7 @@ var widget = (function(jsonData){
 		price = parseFloat(price, 2) || 0 ;
 		var priceLabel = $("<div>", {
 			class : "price-label",
-			html : '<div class="price-label-text"></div><div class="price-wrapper"><div class="price">' + price +'</div></div>'
+			html : '<div class="price-label-text"></div><div class="price-wrapper"><div class="price">' + "$" + price +'</div></div>'
 		});
 		$priceLabel.html(priceLabel);
 
