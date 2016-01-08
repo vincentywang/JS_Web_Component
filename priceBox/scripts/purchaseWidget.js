@@ -66,7 +66,7 @@ var widget = (function(jsonData){
 					price = num * parseFloat(iThreeTicPrice);
 					break;
 			}
-			return price;
+			return price.toFixed(2);
 		},
 
 		getQualityBasicPrice : function(qualityTag) {
@@ -351,7 +351,7 @@ var widget = (function(jsonData){
 
 	
 	function buildPriceLabel (price) {
-		price = price || 0 ;
+		price = parseFloat(price, 2) || 0 ;
 		var priceLabel = $("<div>", {
 			class : "price-label",
 			html : '<div class="price-label-text"></div><div class="price-wrapper"><div class="price">' + price +'</div></div>'
@@ -413,7 +413,6 @@ var widget = (function(jsonData){
 	}
 
 	return {
-		render : render,
 		init : init
 	};
 
