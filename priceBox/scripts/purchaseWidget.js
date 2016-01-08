@@ -7,7 +7,10 @@ var widget = (function(jsonData){
 		$ticketCounter,   
 		$priceLabel,      
 		$payButton,
-		$numTicket;
+		$numTicket,
+		iOneTicPrice,
+		iTwoTicPrice,
+		iThreeTicPrice;
 
 	var	dataSource = {
 		originData : null,
@@ -28,9 +31,6 @@ var widget = (function(jsonData){
 		},
 
 		getQualityPrice : function(qualityTag) { // SD, HD
-			console.log("what is origin data");
-			console.log(this.originData);
-			console.warn(this.originData);
 			if (this.originData) {
 				for (var index in this.originData) {
 					if (this.originData.hasOwnProperty(index)) {
@@ -44,30 +44,54 @@ var widget = (function(jsonData){
 			}
 		},
 
+		setQualityPrice : function(qualityTag) {
+			qualityTag = qualityTag || 'SD' ;
+			var aPrice = this.getQualityPrice(qualityTag);
+			iOneTicPrice = parseFloat(aPrice[1]);
+			iTwoTicPrice = parseFloat(aPrice[2]);
+			iThreeTicPrice = parseFloat(aPrice[3]);
+		},
+
+		getTicketPrice : function(numTic) {
+			var price,
+				num = parseInt(numTic);
+			switch (num) {
+				case 1:
+					price = num * parseFloat(iOneTicPrice);
+					break;
+				case 2:
+					price = num * parseFloat(iTwoTicPrice);
+					break;
+				default:
+					price = num * parseFloat(iThreeTicPrice);
+					break;
+			}
+			return price;
+		},
+
 		getQualityBasicPrice : function(qualityTag) {
-			var qualityTag = qualityTag || 'SD' ;
+			qualityTag = qualityTag || 'SD' ;
 			console.log(qualityTag);
 			var aPrice = this.getQualityPrice(qualityTag);
 			console.dir(aPrice);
-			return aPrice[3];
+			return aPrice[1];
 		}
 	};
 
 	function init (qualityTag) {
 		// initBasicHtml();
-		var qualityTag = qualityTag || 'SD' ;
+		qualityTag = qualityTag || 'SD' ;
 		bindEvent(qualityTag);
 		loadData();
-		render();
-		testFun();
+		render(); 
 	}
 
-	function testFun () {
-		// console.trace(this.dataSource.quality);
-	}
-
-	// init html wrapper to set up variables
-	function initBasicHtml (eleTag) {
+	
+	/**
+	 * initialize basic HTML
+	 * @return object a jQuery object contain the app's basic HTML structure
+	 */
+	function initBasicHtml () {
 		
 		$purchaseWidget =  $("<div></div>", {"id" : "purchaseWidget"});
 		$qualityTab =      $("<div></div>", {"id" : "qualityTab"});
@@ -87,17 +111,26 @@ var widget = (function(jsonData){
 	}
 	
 
-	function render (qualityTag) {
+	/**
+	 * render price list and price label when click different quality tab
+	 * render price label when click up and down arrow
+	 * 
+	 * @param  string qualityTag [description]
+	 * @return int num            [description]
+	 */
+	function render (qualityTag, num) {
 		console.log("what is the qualityTag");
 		console.log(qualityTag);
-		if (typeof qualityTag === 'undefined') {
-			var qualityTag = qualityTag || 'SD' ;
+
+		if (typeof qualityTag === 'undefined') { // initialize render
+			qualityTag = qualityTag || 'SD' ;
 			var eleTag = 'div#myApp';
 			// var price = this.dataSource.getQualityBasicPrice(qualityTag);
 			// console.log(price);
 			$(eleTag).append(initBasicHtml());
-		} else {
-			var price = dataSource.getQualityBasicPrice(qualityTag);
+		} else { // update render
+			dataSource.setQualityPrice(qualityTag);
+			var price = dataSource.getTicketPrice(num);
 			buildPriceList(qualityTag);
 			buildPriceLabel(price);
 		}
@@ -141,8 +174,8 @@ var widget = (function(jsonData){
 				buildTicketCounter();
 			})
 			.on("widget/build/priceLabel", function(){
-				var price = dataSource.getQualityBasicPrice();
-				buildPriceLabel(price);
+				dataSource.setQualityPrice(qualityTag);
+				buildPriceLabel(dataSource.getTicketPrice(1));
 			});
 	}
 	
@@ -157,11 +190,7 @@ var widget = (function(jsonData){
 			sdSrc = '/assets/img/sd.png',
 			hdSrc = '/assets/img/hd.png',
 			threeDSrc = '/assets/img/3d.png',
-			fourKSrc = '/assets/img/4k.png',
-			sdFocSrc = '/assets/img/sd_focus.png',
-			hdFocSrc ='/assets/img/hd_focus.png',
-			threeDFocSrc = '/assets/img/3d_focus.png',
-			fourKFocSrc = '/assets/img/4k_focus.png';
+			fourKSrc = '/assets/img/4k.png';
 
 		var quality = dataSource.getQualityType();
 		// console.log(quality);
@@ -322,7 +351,7 @@ var widget = (function(jsonData){
 
 	
 	function buildPriceLabel (price) {
-		var price = price || 0 ;
+		price = price || 0 ;
 		var priceLabel = $("<div>", {
 			class : "price-label",
 			html : '<div class="price-label-text"></div><div class="price-wrapper"><div class="price">' + price +'</div></div>'
@@ -356,26 +385,27 @@ var widget = (function(jsonData){
 	}
 
 	function registerQualityChange () {
-		console.log("registerQualityChange.call");
-		var qualityTab = $('.single-quality-tab');
-		qualityTab.on('click', function() {
+		var	defaultTicNum = 1 ;
+		$('div.single-quality-tab').on('click', function() {
 			var quality = $(this).data('tag');
 			console.log("clicked " + quality + " tab");
-			// buildPriceList(quality);
-			// buildPriceLabel('20');
-			console.log(quality);
-			render(quality);
+			render(quality, defaultTicNum);
 		});
 	}
 
 	function addOneTicket () {
 		numTicket ++ ;
 		updateTicketNum(numTicket);
+		buildPriceLabel(dataSource.getTicketPrice(numTicket));
 	}
 
 	function subOneTicket () {
-		numTicket --;
-		updateTicketNum(numTicket);
+		
+		if (numTicket > 1) {
+			numTicket --;
+			updateTicketNum(numTicket);
+			buildPriceLabel(dataSource.getTicketPrice(numTicket));
+		}
 	}
 
 	function updateTicketNum (numTicket) {
@@ -384,7 +414,6 @@ var widget = (function(jsonData){
 
 	return {
 		render : render,
-		test : testFun,
 		init : init
 	};
 
