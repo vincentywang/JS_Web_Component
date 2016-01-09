@@ -393,15 +393,6 @@ var widget = (function(jsonData){
 			}
 		});
 
-
-		// $('div#up_arrow').on('click', function(){
-		// 	console.log("click up arrow");
-		// 	addOneTicket();
-		// });
-		// $('div#down_arrow').on('click', function(){
-		// 	console.log("click down arrow");
-		// 	subOneTicket();
-		// });
 	}
 
 	function registerQualityChange () {
